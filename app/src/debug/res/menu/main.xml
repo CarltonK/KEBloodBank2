@@ -5,9 +5,23 @@
 
     <item
         android:id="@+id/action_logout"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         android:menuCategory="secondary"
         android:title="Sign Out"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_sendmessage"
+        android:orderInCategory="1"
+        android:menuCategory="secondary"
+        android:title="Send Message"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_push"
+        android:orderInCategory="2"
+        android:menuCategory="secondary"
+        android:title="Push Notifications"
         app:showAsAction="never" />
 
 

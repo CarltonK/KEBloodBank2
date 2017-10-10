@@ -43,11 +43,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,9 +73,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final int CALL_SOMEONE = 2;
     LocationRequest mLocationRequest;
     private HashMap<Marker, BBUser> myMarkerHashMap;
-    private ArrayList<BBUser> markerArrayList = new ArrayList<>();
+    private List<BBUser> markerArrayList = new ArrayList<>();
     private SessionManager sessionManager;
-    public int pos;
+    int pos;
 
 
     @Override
@@ -92,6 +97,70 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         myMarkerHashMap = new HashMap<>();
 
 
+    }
+
+
+    private void RegisterDevice(final String email, final String token) {
+
+        //Dialog starts when the method is called
+        final ProgressDialog progressDialog = new ProgressDialog(MapsActivity.this);
+        progressDialog.setMessage("Registering Device....");
+        progressDialog.show();
+
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(Constants.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            RequestInterface requestInterface = retrofit.create(RequestInterface.class);
+
+            BBUser user = new BBUser();
+            user.setEmail(email);
+            user.setDevicetoken(token);
+
+            //Makes a request to the server based on the operation set
+            ServerRequest request = new ServerRequest();
+            request.setOperation(Constants.REGISTER_DEVICE);
+            request.setUser(user);
+
+        Gson gson = new Gson();
+        String device = gson.toJson(request);
+        Log.i(Constants.TAG, device);
+
+            //Response from the server side, requestInterface is the response received based on the request made
+            Call<ServerResponse> response = requestInterface.operation(request);
+
+            response.enqueue(new Callback<ServerResponse>() {
+                @Override
+                public void onResponse(Call<ServerResponse> call, retrofit2.Response<ServerResponse> response) {
+
+                    try {
+                        ServerResponse resp = response.body();
+
+                        if (resp.getResult().equals(Constants.SUCCESS)){
+                            Toast.makeText(getApplicationContext(), "Device registered to receive notifications. Carry on", Toast.LENGTH_SHORT).show();
+                            Log.i(Constants.TAG, email + " " + token);
+                        } else {
+                            Toast.makeText(getApplicationContext(),resp.getMessage(),Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (Exception e){
+                        Toast.makeText(getApplicationContext(), e.getMessage(),Toast.LENGTH_SHORT).show();
+                    }
+
+                    progressDialog.dismiss();
+                }
+
+                @Override
+                public void onFailure(Call<ServerResponse> call, Throwable t) {
+
+
+                    Log.d(Constants.TAG,t.getLocalizedMessage());
+                    Toast.makeText(getApplicationContext(),t.getMessage(),Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+
+                }
+            });
     }
 
 
@@ -124,6 +193,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.setMyLocationEnabled(true);
         }
 
+        CreateMarkers();
     }
 
     private void CreateMarkers() {
@@ -158,9 +228,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
                         markerArrayList = new ArrayList<>(serverResponse.getUsers());
-                        Log.d(Constants.TAG, serverResponse.getMessage());
                         Toast.makeText(getApplicationContext(), "Showing users around you", Toast.LENGTH_SHORT).show();
-                        PlotMarkers(markerArrayList);
+
+                        Gson gson = new Gson();
+                        String watu = gson.toJson(markerArrayList);
+                        Log.i(Constants.TAG, watu);
+
+                        PlotMarkers(markerArrayList, pos);
 
                     } else {
 
@@ -249,8 +323,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         String name = user.get(sessionManager.KEY_NAME);
         String capacity = user.get(sessionManager.KEY_CAPACITY);
 
+
+        markerArrayList.add(new BBUser(name, phone, capacity, location.getLatitude(), location.getLongitude()));
         myMarkerHashMap.put(mCurrLocationMarker, new BBUser(name, phone, capacity, location.getLatitude(), location.getLongitude()));
-        PlotMarkers(markerArrayList);
 
         if (!isOnline(MapsActivity.this)){
             Toast.makeText(getApplicationContext(), "NO INTERNET CONNECTION", Toast.LENGTH_SHORT).show();
@@ -277,34 +352,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void PlotMarkers(ArrayList<BBUser> markerArrayList) {
-
-        ;
-        if (markerArrayList.size()> 0){
+    private void PlotMarkers(List<BBUser> markerArrayList, int pos) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
 
-            BBUser user = markerArrayList.get(pos);
+            for (int i = 0; i < markerArrayList.size(); i++){
 
-            LatLng lng = new LatLng(user.getLatitude(), user.getLongitude());
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(lng);
-            markerOptions.icon(BitmapDescriptorFactory.defaultMarker());
+                BBUser user = markerArrayList.get(pos);
 
-            Marker marker = mMap.addMarker(markerOptions);
-            myMarkerHashMap.put(marker, user);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(new LatLng(user.getLatitude(), user.getLongitude()));
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker());
 
-            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker) {
-                    marker.showInfoWindow();
-                    return true;
-                }
-            });
+                Marker marker = mMap.addMarker(markerOptions);
+                builder.include(markerOptions.getPosition());
+                myMarkerHashMap.put(marker, markerArrayList.get(i));
 
                 mMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
+            }
 
-        }
     }
+
 
     public class MarkerInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
 
@@ -419,7 +487,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         Toast.makeText(getApplicationContext(), "Your location has been saved", Toast.LENGTH_SHORT).show();
                         Checker();
-                        CreateMarkers();
 
                     } else {
                         Toast.makeText(getApplicationContext(),resp.getMessage(), Toast.LENGTH_SHORT ).show();
@@ -621,6 +688,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        HashMap<String, String> user = sessionManager.getUserDetails();
+        String capacity = user.get(SessionManager.KEY_CAPACITY);
+        String email = user.get(sessionManager.KEY_EMAIL);
+
         int id = item.getItemId();
 
         if (id == R.id.action_logout){
@@ -637,6 +708,36 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                     })
                     .setNegativeButton("No",null).show();
+
+        }
+
+        if (id == R.id.action_sendmessage){
+
+            if (!capacity.equals("Health Officer")){
+                Toast.makeText(getApplicationContext(), "Action not authorised", Toast.LENGTH_SHORT).show();
+            } else {
+                startActivity(new Intent(MapsActivity.this, SendMessage.class));
+            }
+        }
+
+        if (id ==  R.id.action_push){
+
+            if (capacity.equals("Health Officer")){
+                Toast.makeText(getApplicationContext(), "Action not authorised", Toast.LENGTH_SHORT).show();
+            } else {
+
+                HashMap<String, String> deviceToken = sessionManager.getDeviceToken();
+                String token = deviceToken.get(SessionManager.TAG_TOKEN);
+
+                if (!isOnline(MapsActivity.this)){
+
+                    Toast.makeText(getApplicationContext() ,"NO INTERNET CONNECTION", Toast.LENGTH_SHORT).show();
+                } else {
+                    RegisterDevice(email, token);
+                }
+
+
+            }
         }
 
         return super.onOptionsItemSelected(item);

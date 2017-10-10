@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
@@ -34,6 +35,7 @@ public class Register extends AppCompatActivity {
     TextView btnlogin, btnregister;
     EditText txtname, txtgender, txtdob, txtid, txtphonenumber, txtemail, Texxtpass;
     Spinner spGender;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +49,8 @@ public class Register extends AppCompatActivity {
         txtphonenumber= (EditText) findViewById(R.id.txtphonenumber);
         spGender = (Spinner) findViewById(R.id.sp_gender);
         Texxtpass = (EditText) findViewById(R.id.txtpass);
+
+        sessionManager = new SessionManager(getApplicationContext());
 
         //Defines the items to be populated on the spinner
         List<String> gender = new ArrayList<>();
@@ -101,7 +105,7 @@ public class Register extends AppCompatActivity {
     }
 
     //Method that will store details into DB
-    private void register(String Name, String Email, String PhoneNumber, String ID, String DOB, String Gender, String Password) {
+    private void register(String Name, final String Email, String PhoneNumber, String ID, String DOB, String Gender, String Password) {
 
 
         //Dialog starts when the method is called
@@ -145,19 +149,28 @@ public class Register extends AppCompatActivity {
             @Override
             public void onResponse(Call<ServerResponse> call, retrofit2.Response<ServerResponse> response) {
 
-                ServerResponse resp = response.body();
-                if (resp.getResult().equals(Constants.SUCCESS)){
-                    Toast.makeText(getApplicationContext(), "Registration successful...Welcome", Toast.LENGTH_SHORT).show();
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            gotoNext();
-                        }
-                    }, 1000);
-                } else {
-                    Toast.makeText(getApplicationContext(),resp.getMessage(),Toast.LENGTH_SHORT).show();
-                    gotoNext();
+                try {
+
+                    ServerResponse resp = response.body();
+
+                    if (resp.getResult().equals(Constants.SUCCESS)){
+                        Toast.makeText(getApplicationContext(), "Registration almost complete. Give us a sec", Toast.LENGTH_SHORT).show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                gotoNext();
+                            }
+                        }, 500);
+
+                    } else {
+
+                        Toast.makeText(getApplicationContext(),resp.getMessage(),Toast.LENGTH_SHORT).show();
+                        gotoNext();
+                    }
+                } catch (Exception e){
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
+
                 progressDialog.dismiss();
             }
 

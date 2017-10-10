@@ -38,6 +38,7 @@ public class SessionManager {
     public static final String KEY_DOB = "dob";
     public static  final String KEY_NATID = "natId";
     public static final String KEY_CAPACITY = "capacity";
+    public static final String TAG_TOKEN = "tagtoken";
 
 
 
@@ -47,6 +48,8 @@ public class SessionManager {
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
     }
+
+
 
     public void createLoginSession(String name, String phone, String email, String gender, String dob, String natid, String capacity){
         // Storing login value as TRUE
@@ -73,7 +76,6 @@ public class SessionManager {
         user.put(KEY_CAPACITY, pref.getString(KEY_CAPACITY, null));
         user.put(KEY_DOB, pref.getString(KEY_DOB,null));
 
-
         // return user
         return user;
     }
@@ -83,6 +85,20 @@ public class SessionManager {
         editor.putString(KEY_CAPACITY, capacity);
         editor.commit();
     }
+
+    public boolean saveDeviceToken(String token){
+        editor.putString(TAG_TOKEN, token);
+        editor.commit();
+        return true;
+    }
+
+    //this method will fetch the device token from shared preferences
+    public HashMap<String, String> getDeviceToken(){
+        HashMap<String, String> token = new HashMap<>();
+        token.put(TAG_TOKEN, pref.getString(TAG_TOKEN, null));
+        return token;
+    }
+
 
     public void checkLogin(){
         // Check login status

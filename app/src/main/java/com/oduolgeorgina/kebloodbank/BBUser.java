@@ -21,6 +21,15 @@ public class BBUser {
     private String capacity;
     private Double latitude;
     private Double longitude;
+    private String devicetoken;
+
+    public String getDevicetoken() {
+        return devicetoken;
+    }
+
+    public void setDevicetoken(String devicetoken) {
+        this.devicetoken = devicetoken;
+    }
 
     public BBUser() {
     }

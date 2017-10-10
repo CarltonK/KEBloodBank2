@@ -6,7 +6,7 @@ package com.oduolgeorgina.kebloodbank;
 
 public class Constants {
 
-    public static final String BASE_URL = "http://blooddonors.eshopkenya.com/";
+    public static final String BASE_URL = "http://oduolgeorgina.com/";
     public static final String REGISTER_OPERATION = "register";
     public static final String LOGIN_OPERATION = "login";
     public static final String CHANGE_PASSWORD = "chgPass";
@@ -15,6 +15,8 @@ public class Constants {
     public static final String CAPACITY_OPERATION = "capacityoperation";
     public static final String LOCATION_OPERATION = "locationoperation";
     public static final String GET_LOCATIONS = "getlocations";
+    public static final String REGISTER_DEVICE = "registerdevice";
+    public static final String SEND_MULTIPLE = "sendmultiple";
 
 
 

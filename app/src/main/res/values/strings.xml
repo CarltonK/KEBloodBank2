@@ -6,6 +6,8 @@
     <string name="title_activity_donor">Donor</string>
     <string name="title_activity_health_officer">HealthOfficer</string>
 
+    <string name="msg_subscribed">Automatically subscribed to Notifications </string>
+
     <string-array name="gender">
         <item>Gender</item>
         <item>Female</item>
