@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "266227471966",
+    "firebase_url": "https://kebloodbank2.firebaseio.com",
+    "project_id": "kebloodbank2",
+    "storage_bucket": "kebloodbank2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:266227471966:android:01f5d3be141d0f85",
+        "android_client_info": {
+          "package_name": "com.oduolgeorgina.kebloodbank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "266227471966-fv08egic9bmv509mgga99734emhqiumh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oduolgeorgina.kebloodbank",
+            "certificate_hash": "ea9befafc4d5fbd77d3244dd7aae1f3d70ce2a05"
+          }
+        },
+        {
+          "client_id": "266227471966-qjfepv1i53e6ro12nclq0m74672rhp9c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7wX7KaJdAJTMz4wnI092AgWkCkQMWRQo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "266227471966-qjfepv1i53e6ro12nclq0m74672rhp9c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

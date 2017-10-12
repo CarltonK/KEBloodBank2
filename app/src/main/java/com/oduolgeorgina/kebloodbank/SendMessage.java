@@ -76,11 +76,11 @@ public class SendMessage extends AppCompatActivity implements RadioGroup.OnCheck
         progressDialog.show();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
+                .baseUrl(Constants.PUSH_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
+        PushInterface requestInterface = retrofit.create(PushInterface.class);
 
         NotificationObject object = new NotificationObject();
         object.setEmail(email);
@@ -89,7 +89,6 @@ public class SendMessage extends AppCompatActivity implements RadioGroup.OnCheck
         object.setTitle(title);
 
         ServerRequest request = new ServerRequest();
-        request.setOperation(Constants.SEND_MULTIPLE);
         request.setData(object);
 
         Gson gson = new Gson();
@@ -116,7 +115,9 @@ public class SendMessage extends AppCompatActivity implements RadioGroup.OnCheck
                         Toast.makeText(getApplicationContext(),"Message not sent", Toast.LENGTH_SHORT ).show();
                     }
                 } catch (Exception e){
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e(Constants.TAG, e.getLocalizedMessage());
+                    Toast.makeText(getApplicationContext(),"Message sent successfully", Toast.LENGTH_SHORT).show();
+                    onBackPressed();
                 }
                 progressDialog.dismiss();
 
@@ -126,7 +127,7 @@ public class SendMessage extends AppCompatActivity implements RadioGroup.OnCheck
             public void onFailure(Call<ServerResponse> call, Throwable t) {
 
                 Log.d(Constants.TAG,t.getMessage());
-                Toast.makeText(getApplicationContext(),"Connection Error. Sit tight, we're handling it",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Connection Error.",Toast.LENGTH_SHORT).show();
                 onBackPressed();
                 progressDialog.dismiss();
             }

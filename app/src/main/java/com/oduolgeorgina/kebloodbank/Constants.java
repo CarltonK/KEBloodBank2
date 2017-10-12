@@ -7,6 +7,7 @@ package com.oduolgeorgina.kebloodbank;
 public class Constants {
 
     public static final String BASE_URL = "http://oduolgeorgina.com/";
+    public static final String PUSH_URL = "http://oduolgeorgina.com/";
     public static final String REGISTER_OPERATION = "register";
     public static final String LOGIN_OPERATION = "login";
     public static final String CHANGE_PASSWORD = "chgPass";
