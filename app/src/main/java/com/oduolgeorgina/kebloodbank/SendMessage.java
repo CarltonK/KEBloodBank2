@@ -110,7 +110,7 @@ public class SendMessage extends AppCompatActivity implements RadioGroup.OnCheck
 
                         Toast.makeText(getApplicationContext(), "Message sent successfully", Toast.LENGTH_SHORT).show();
                         onBackPressed();
-                        
+
 
                     } else {
                         Toast.makeText(getApplicationContext(),"Message not sent", Toast.LENGTH_SHORT ).show();
