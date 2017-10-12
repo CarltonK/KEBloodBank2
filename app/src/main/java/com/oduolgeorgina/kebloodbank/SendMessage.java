@@ -92,6 +92,7 @@ public class SendMessage extends AppCompatActivity implements RadioGroup.OnCheck
         request.setData(object);
 
         Gson gson = new Gson();
+        
         String maneno = gson.toJson(request);
         Log.i(Constants.TAG, maneno);
 
