@@ -92,7 +92,7 @@ public class SendMessage extends AppCompatActivity implements RadioGroup.OnCheck
         request.setData(object);
 
         Gson gson = new Gson();
-        
+
         String maneno = gson.toJson(request);
         Log.i(Constants.TAG, maneno);
 
@@ -117,7 +117,7 @@ public class SendMessage extends AppCompatActivity implements RadioGroup.OnCheck
                         Toast.makeText(getApplicationContext(),"Message not sent", Toast.LENGTH_SHORT ).show();
                     }
                 } catch (Exception e){
-                    Log.e(Constants.TAG, e.getLocalizedMessage());
+                    Log.e(Constants.TAG , e.getLocalizedMessage());
                     Toast.makeText(getApplicationContext(),"Message sent successfully", Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 }
